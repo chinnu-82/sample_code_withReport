@@ -1,0 +1,52 @@
+name: E2E tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays, 06:00 UTC
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Restore report history
+        uses: actions/cache/restore@v4
+        with:
+          path: aurora-report/history.json
+          key: aurora-history-${{ github.run_id }}
+          restore-keys: aurora-history-
+
+      - name: Run tests
+        run: npx playwright test
+
+      - name: Save report history
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: aurora-report/history.json
+          key: aurora-history-${{ github.run_id }}
+
+      - name: Upload the Aurora report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aurora-report
+          path: aurora-report/
+          retention-days: 14

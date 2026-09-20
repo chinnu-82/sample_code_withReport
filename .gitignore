@@ -1,0 +1,4 @@
+node_modules/
+aurora-report/
+test-results/
+playwright-report/

@@ -1,0 +1,26 @@
+{
+  "name": "sauce-demo-automation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright end-to-end tests for sauce-demo.myshopify.com, reported with Aurora Report — every test tells a story.",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:mobile": "playwright test --project \"Mobile Chrome\"",
+    "test:headed": "playwright test --headed --workers=1",
+    "report": "aurora-report open",
+    "setup": "npm install && playwright install chromium"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chinnu-82/sample_code_withReport.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "aurora-report": "file:vendor/aurora-report-1.0.0.tgz"
+  }
+}

@@ -1,0 +1,29 @@
+// @ts-check
+const { defineAuroraConfig } = require('aurora-report');
+
+module.exports = defineAuroraConfig({
+  title: 'Sauce Demo — Shopify store',
+  subtitle: 'End-to-end journeys for sauce-demo.myshopify.com',
+  outputDir: 'aurora-report',
+  open: 'never', // set to 'on-failure' if you want it to pop open locally
+
+  theme: { mode: 'auto', accent: '#1f8a70' },
+
+  capture: {
+    stepScreenshots: 'on', // every step of every story gets a screenshot
+    failureScreenshot: true,
+    failureHtml: true,
+    fullPage: false,
+    video: 'retain-on-failure',
+    trace: 'retain-on-failure',
+    console: true,
+    pageErrors: true,
+    network: true,
+  },
+
+  charts: { trend: true, timeline: true, slowest: true, suites: true, failureReasons: true, projects: true },
+  history: { enabled: true, keep: 30 },
+
+  // The store is on the public internet, so pages are slower than a local app.
+  slowTestThreshold: 20_000,
+});
