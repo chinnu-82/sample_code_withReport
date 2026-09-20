@@ -5,6 +5,10 @@ module.exports = defineAuroraConfig({
   title: 'Sauce Demo — Shopify store',
   subtitle: 'End-to-end journeys for sauce-demo.myshopify.com',
   outputDir: 'aurora-report',
+  // Every run is kept in its own folder, e.g. aurora-report/2026-09-20_16-32-08/.
+  // aurora-report/index.html lists all of them, newest first.
+  timestampedRuns: true,
+  keepRuns: 30, // older run folders are deleted; set to 0 to keep everything
   open: 'never', // set to 'on-failure' if you want it to pop open locally
 
   theme: { mode: 'auto', accent: '#1f8a70' },

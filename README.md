@@ -18,7 +18,7 @@ cd sample_code_withReport
 npm install                  # installs Playwright + the bundled Aurora Report
 npx playwright install chromium
 npx playwright test          # runs all 17 tests against the live demo store
-npx aurora-report open       # opens aurora-report/index.html
+npx aurora-report open       # opens the report for the run that just finished
 ```
 
 On Windows you can skip all of that and double-click **`run-tests.bat`**, which installs what is missing, runs the tests and opens the report.
@@ -184,9 +184,35 @@ Aurora Report is committed to this repo as `vendor/aurora-report-1.0.0.tgz`, so 
 
 `.github/workflows/e2e.yml` runs the suite on every push and pull request, and weekly. The report is uploaded as a build artifact called **aurora-report** — download it, unzip it, and open `index.html`.
 
+## Every run is kept
+
+Reports are **not** overwritten. Each run is written to its own timestamped folder:
+
+```
+aurora-report/
+  index.html                  ← list of every run, newest first
+  history.json                ← shared, so the trend charts span all runs
+  2026-09-20_09-14-02/        ← one run
+    index.html                  its report
+    results.json                its data
+    assets/                     its screenshots, videos and traces
+  2026-09-20_11-47-35/        ← the next run, untouched by later ones
+```
+
+- Folder names are local time, `YYYY-MM-DD_HH-MM-SS`, so they sort oldest to newest.
+- Each folder stands alone — zip one and send it to a colleague.
+- The 30 most recent runs are kept; change `keepRuns` in `aurora.config.js` (`0` keeps everything).
+
+```bash
+npx aurora-report open          # the newest run
+npx aurora-report open --all    # the list of every run
+```
+
+To go back to a single overwritten report, set `timestampedRuns: false` in `aurora.config.js`.
+
 ## The report
 
-`npx playwright test` writes `aurora-report/index.html`: the run summary, every test story, failure analysis, videos and traces for failures, trends across runs, and the worker timeline.
+`npx playwright test` writes a report: the run summary, every test story, failure analysis, videos and traces for failures, trends across runs, and the worker timeline.
 
 ![Timeline](docs/images/report-timeline.png)
 
