@@ -49,4 +49,10 @@ module.exports = defineAuroraConfig({
 
   // The store is on the public internet, so pages are slower than a local app.
   slowTestThreshold: 20_000,
+
+  links: {
+    // report.issue('SHOP-42') becomes a link. Point this at your own tracker,
+    // e.g. 'https://yourcompany.atlassian.net/browse/{id}'.
+    issue: 'https://github.com/chinnu-82/sample_code_withReport/issues/{id}',
+  },
 });

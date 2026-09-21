@@ -26,7 +26,8 @@ On Windows you can skip all of that and double-click **`run-tests.bat`**, which 
 Handy variations:
 
 ```bash
-npm run test:smoke     # the 5 @smoke tests, about 6 seconds
+npm run test:smoke     # the @smoke tests, about 10 seconds
+npm run test:api       # the JSON API checks, no browser needed for two of them
 npm run test:mobile    # the emulated Pixel 7 test
 npm run test:headed    # watch a real browser do it, one test at a time
 npm run report         # reopen the last report
@@ -64,6 +65,9 @@ $env:BASE_URL="https://another-shop.myshopify.com"; npx playwright test   # Powe
 | 15 | Wrong credentials | Is not signed in |
 | 16 | Unknown address | Gets a 404 page with a way back |
 | 17 | Shop on a phone `@responsive` | Browses and adds to the cart at 390px wide |
+| 18 | Catalogue API prices `@api` `@smoke` | Checks every price through `/products.json` |
+| 19 | Stock flags in the API `@api` | Sold-out products are flagged in the data too |
+| 20 | Cart API matches the UI `@api` `@cart` | Adds through the UI, then asks `/cart.js` |
 
 Run a subset by tag:
 
@@ -126,6 +130,36 @@ What each part of the code produces in the report:
 | `report.check('…', fn)` | A soft check — one failure doesn't hide the rest |
 | `report.feature()` / `severity()` / `owner()` | Badges for filtering and grouping |
 
+## API tests tell a story too
+
+The `report` fixture does not need a browser. Two of the API tests never open one — Aurora records the steps and the payloads, just without screenshots:
+
+```js
+test('the catalogue API agrees with our expected prices', { tag: ['@api', '@smoke'] }, async ({ api, report }) => {
+  const products = await api.products();               // step + attached payload
+
+  for (const expected of Object.values(PRODUCTS)) {
+    await report.check(`${expected.name} still costs £${expected.price}`, async () => {
+      const found = products.find((p) => p.title === expected.name);
+      expect(Number(found.variants[0].price)).toBe(expected.price);
+    });                                                // soft: one price change reports the rest too
+  }
+});
+```
+
+![An API test story](docs/images/story-api.png)
+
+The third mixes both worlds: it shops through the UI, then asks the cart API whether the back end agrees. `page.request` shares the browser's cookies, so it sees the same cart:
+
+```js
+await product.addToCartAndWait(item.name);             // through the UI
+const cartApi = new StoreApi(page.request, report);    // same session
+const cart = await cartApi.cart();                     // GET /cart.js
+expect(cart.total_price / 100).toBeCloseTo(item.price, 2);
+```
+
+That test's story ends with a full-page screenshot, so the report shows the basket the shopper would see next to the JSON the server returned.
+
 ## Project layout
 
 ```
@@ -136,6 +170,7 @@ pages/           page objects — they record the story
   CartPage.js      cart lines, quantities, totals, checkout
   SearchPage.js    search and results
   AccountPage.js   customer login
+  StoreApi.js      the JSON endpoints — /products.json and /cart.js
 tests/           one spec per area of the shop
 fixtures.js      wires the page objects into Playwright fixtures
 test-data.js     expected products and prices
