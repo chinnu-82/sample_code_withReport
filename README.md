@@ -184,6 +184,30 @@ Aurora Report is committed to this repo as `vendor/aurora-report-1.0.0.tgz`, so 
 
 `.github/workflows/e2e.yml` runs the suite on every push and pull request, and weekly. The report is uploaded as a build artifact called **aurora-report** — download it, unzip it, and open `index.html`.
 
+## Failed API calls in the report
+
+Any request that fails — HTTP 400 and above, or one that never completes — is recorded with **both sides**: the request that went out (method, URL, headers, payload) and the response that came back (status, headers, body, duration). Open **Browser diagnostics → Failed network requests** on any test and click a row.
+
+Secrets never reach the report: `authorization`, `cookie` and `x-api-key` headers show as `«hidden»`.
+
+A live Shopify store loads a lot of third-party tracking that fails constantly and says nothing about the shop — 72 such entries in an unfiltered run here. `aurora.config.js` narrows that to the store's own traffic:
+
+```js
+capture: {
+  network: {
+    include: ['sauce-demo.myshopify.com'],   // only the store's own requests
+    exclude: [                               // and not even all of those
+      '**/web-pixels**',
+      'monorail-edge.shopifysvc.com',
+      /facebook\.com\/tr/,
+      'google-analytics.com',
+    ],
+  },
+},
+```
+
+That leaves exactly one recorded request across the whole suite: the deliberate 404 from the error-handling test. Patterns can be a substring, a `*` wildcard, a `RegExp`, or a `(url) => boolean` function.
+
 ## Every run is kept
 
 Reports are **not** overwritten. Each run is written to its own timestamped folder:

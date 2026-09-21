@@ -21,7 +21,8 @@
   "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.63.0",
-    "aurora-report": "file:vendor/aurora-report-1.1.0.tgz"
+    "aurora-report": "file:vendor/aurora-report-1.2.0.tgz"
   }
 }
+
 

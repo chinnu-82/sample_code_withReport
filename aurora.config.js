@@ -22,7 +22,26 @@ module.exports = defineAuroraConfig({
     trace: 'retain-on-failure',
     console: true,
     pageErrors: true,
-    network: true,
+
+    // Failed requests are recorded with the request that went out and the
+    // response that came back — handy when a Shopify endpoint misbehaves.
+    network: {
+      requestBody: true,
+      responseBody: true,
+      maxBodySize: 4096,
+      // A live Shopify store loads a lot of third-party tracking that fails
+      // constantly and says nothing about the shop. Record only the store's
+      // own traffic, then drop Shopify's own analytics beacons as well.
+      include: ['sauce-demo.myshopify.com'],
+      exclude: [
+        '**/web-pixels**',
+        '**/wpm@**',
+        'monorail-edge.shopifysvc.com',
+        /facebook\.com\/tr/,
+        'google-analytics.com',
+        'googletagmanager.com',
+      ],
+    },
   },
 
   charts: { trend: true, timeline: true, slowest: true, suites: true, failureReasons: true, projects: true },
