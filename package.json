@@ -7,6 +7,7 @@
     "test": "playwright test",
     "test:smoke": "playwright test --grep @smoke",
     "test:api": "playwright test --grep @api",
+    "test:live": "aurora-report live",
     "test:mobile": "playwright test --project \"Mobile Chrome\"",
     "test:headed": "playwright test --headed --workers=1",
     "report": "aurora-report open",
@@ -22,7 +23,7 @@
   "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.63.0",
-    "aurora-report": "file:vendor/aurora-report-1.2.0.tgz"
+    "aurora-report": "file:vendor/aurora-report-1.3.0.tgz"
   }
 }
 

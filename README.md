@@ -28,6 +28,7 @@ Handy variations:
 ```bash
 npm run test:smoke     # the @smoke tests, about 10 seconds
 npm run test:api       # the JSON API checks, no browser needed for two of them
+npm run test:live      # watch the report fill in while the tests run
 npm run test:mobile    # the emulated Pixel 7 test
 npm run test:headed    # watch a real browser do it, one test at a time
 npm run report         # reopen the last report
@@ -218,6 +219,16 @@ Aurora Report is committed to this repo as `vendor/aurora-report-1.0.0.tgz`, so 
 ### Continuous integration
 
 `.github/workflows/e2e.yml` runs the suite on every push and pull request, and weekly. The report is uploaded as a build artifact called **aurora-report** — download it, unzip it, and open `index.html`.
+
+## Watching a run live
+
+The store is on the public internet, so a full run takes about half a minute. Rather than waiting for it:
+
+```bash
+npm run test:live
+```
+
+Aurora serves the report on `http://localhost:4321` as the run starts and updates it as each test finishes — a **LIVE** badge counts the progress, and you can open a failure and start debugging before the suite has finished. The usual saved report is written at the end as well.
 
 ## Failed API calls in the report
 
