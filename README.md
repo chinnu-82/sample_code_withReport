@@ -254,6 +254,25 @@ capture: {
 
 That leaves exactly one recorded request across the whole suite: the deliberate 404 from the error-handling test. Patterns can be a substring, a `*` wildcard, a `RegExp`, or a `(url) => boolean` function.
 
+## Console errors you can open up
+
+Console errors and warnings are listed under **Browser diagnostics → Console**. Click one to see everything that was logged: the full message, where in the code it came from, the page it happened on, and each value separately — objects as JSON, errors with their stack trace.
+
+The store's own widgets log chatter we can't do anything about, so `aurora.config.js` filters it out:
+
+```js
+console: {
+  levels: ['error', 'warning'],
+  exclude: [
+    "Provider's accounts list is empty",   // Shopify sign-in widget
+    'cdn.shopify.com/shopifycloud/shop-js', // Shop Pay postMessage warnings
+    'hcaptcha.com',                         // captcha WebGL driver messages
+  ],
+},
+```
+
+That takes a full run from six console messages to one: the 404 the error-handling test causes on purpose. Patterns are matched against the message and the URL of the script that logged it.
+
 ## Every run is kept
 
 Reports are **not** overwritten. Each run is written to its own timestamped folder:

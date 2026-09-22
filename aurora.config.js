@@ -20,7 +20,17 @@ module.exports = defineAuroraConfig({
     fullPage: false,
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
-    console: true,
+    // Console errors and warnings, each expandable to the values that were logged.
+    // Shopify's own widgets log chatter we can't act on, so it's filtered out;
+    // matched against both the message and the script URL it came from.
+    console: {
+      levels: ['error', 'warning'],
+      exclude: [
+        "Provider's accounts list is empty",   // Shopify sign-in widget (FedCM)
+        'cdn.shopify.com/shopifycloud/shop-js', // Shop Pay postMessage warnings
+        'hcaptcha.com',                         // captcha WebGL driver messages
+      ],
+    },
     pageErrors: true,
 
     // Failed requests are recorded with the request that went out and the
